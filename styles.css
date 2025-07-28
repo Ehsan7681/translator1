@@ -582,8 +582,58 @@ body.dark-theme .radio-group label:hover {
 }
 
 textarea {
-  min-height: 120px;
+  min-height: 150px;
   resize: vertical;
+  overflow: auto;
+}
+
+/* Text actions */
+.text-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.text-action-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+body.dark-theme .text-action-btn {
+  background: rgba(50, 50, 50, 0.5);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  color: var(--dark-text-color);
+}
+
+.text-action-btn:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+}
+
+body.dark-theme .text-action-btn:hover {
+  background: rgba(50, 50, 50, 0.7);
+}
+
+/* Custom resize handle */
+textarea::-webkit-resizer {
+  background: linear-gradient(-45deg, transparent 40%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.3) 60%, transparent 60%);
+}
+
+body.dark-theme textarea::-webkit-resizer {
+  background: linear-gradient(-45deg, transparent 40%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.3) 60%, transparent 60%);
+}
+
+@media (max-width: 480px) {
+  textarea {
+    min-height: 200px;
+    resize: vertical;
+  }
 }
 
 /* Buttons */
@@ -661,11 +711,42 @@ body.dark-theme #save-key-btn:hover {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  cursor: pointer;
 }
 
 .history-header h3 {
   margin: 0;
   font-size: 1.3rem;
+  position: relative;
+  padding-left: 25px;
+}
+
+body.rtl .history-header h3 {
+  padding-left: 0;
+  padding-right: 25px;
+}
+
+.history-header h3::before {
+  content: '▼';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+body.rtl .history-header h3::before {
+  left: auto;
+  right: 0;
+}
+
+.history-header.collapsed h3::before {
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+body.rtl .history-header.collapsed h3::before {
+  transform: translateY(-50%) rotate(90deg);
 }
 
 .clear-history-btn {
@@ -726,6 +807,37 @@ body.dark-theme .history-item:hover {
 
 .history-translated-text {
   font-style: italic;
+}
+
+.history-item-actions {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.delete-history-item {
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff0000;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.delete-history-item:hover {
+  background: rgba(255, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+body.dark-theme .delete-history-item {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff5555;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+}
+
+body.dark-theme .delete-history-item:hover {
+  background: rgba(255, 0, 0, 0.3);
 }
 
 /* Layout sections */
@@ -798,5 +910,9 @@ body.dark-theme .history-item:hover {
   
   .translate-button {
     width: 100%;
+  }
+  
+  textarea {
+    min-height: 200px;
   }
 }

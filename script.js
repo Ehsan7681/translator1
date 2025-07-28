@@ -17,6 +17,8 @@ const themeSelect = document.getElementById('theme-select');
 const historyList = document.getElementById('history-list');
 const clearHistoryBtn = document.getElementById('clear-history');
 const historyTitle = document.getElementById('history-title');
+const pasteBtn = document.getElementById('paste-btn');
+const clearSourceBtn = document.getElementById('clear-source-btn');
 
 // Translation tones descriptions
 const translationTones = {
@@ -144,6 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggleMain.addEventListener('click', toggleLanguage);
     themeSelect.addEventListener('change', changeTheme);
     clearHistoryBtn.addEventListener('click', clearHistory);
+    pasteBtn.addEventListener('click', pasteFromClipboard);
+    clearSourceBtn.addEventListener('click', clearSourceText);
     
     // Set up settings panel event listeners
     settingsBtn.addEventListener('click', openSettings);
@@ -170,7 +174,36 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load translation history
     loadHistory();
+    
+    // Collapse history section by default
+    toggleHistoryVisibility();
 });
+
+// Toggle history section visibility
+function toggleHistoryVisibility() {
+    const historyList = document.getElementById('history-list');
+    const historyHeader = document.querySelector('.history-header');
+    
+    // Check if there's any history
+    const history = JSON.parse(localStorage.getItem('translation-history')) || [];
+    
+    // If no history, hide the list and add collapsed class
+    if (history.length === 0) {
+        historyList.style.display = 'none';
+        historyHeader.classList.add('collapsed');
+    } else {
+        // For existing history, start with collapsed state
+        historyList.style.display = 'none';
+        historyHeader.classList.add('collapsed');
+    }
+    
+    // Add click event to history header to toggle visibility
+    historyHeader.addEventListener('click', () => {
+        const isHidden = historyList.style.display === 'none';
+        historyList.style.display = isHidden ? 'block' : 'none';
+        historyHeader.classList.toggle('collapsed', !isHidden);
+    });
+}
 
 // Load models from OpenRouter API
 async function loadModelsFromAPI() {
@@ -391,15 +424,16 @@ function saveToHistory(source, translated, tone, targetLang) {
 // Render history to UI
 function renderHistory(history) {
     const lang = localStorage.getItem('ui-language') || 'en';
+    const historyHeader = document.querySelector('.history-header');
     
     // Clear history list
     historyList.innerHTML = '';
     
     // Update history title
     historyTitle.textContent = lang === 'en' ? 'Translation History' : 'تاریخچه ترجمه';
-    clearHistoryBtn.textContent = lang === 'en' ? 'Clear' : 'پاک کردن';
+    clearHistoryBtn.textContent = lang === 'en' ? 'Clear All' : 'پاک کردن همه';
     
-    // If no history, show message
+    // If no history, show message and collapse
     if (history.length === 0) {
         const noHistoryMessage = document.createElement('p');
         noHistoryMessage.textContent = lang === 'en' ? 'No translation history yet.' : 'هنوز تاریخچه ترجمه‌ای وجود ندارد.';
@@ -407,6 +441,8 @@ function renderHistory(history) {
         noHistoryMessage.style.opacity = '0.7';
         noHistoryMessage.style.padding = '20px';
         historyList.appendChild(noHistoryMessage);
+        historyList.style.display = 'none';
+        historyHeader.classList.add('collapsed');
         return;
     }
     
@@ -414,6 +450,7 @@ function renderHistory(history) {
     history.forEach(item => {
         const historyItem = document.createElement('div');
         historyItem.className = 'history-item';
+        historyItem.dataset.id = item.id;
         
         const toneText = document.getElementById(`tone-${item.tone}`)?.textContent || item.tone;
         
@@ -424,10 +461,37 @@ function renderHistory(history) {
             </div>
             <div class="history-source-text">${item.source}</div>
             <div class="history-translated-text">${item.translated}</div>
+            <div class="history-item-actions">
+                <button class="delete-history-item" data-id="${item.id}">
+                    ${lang === 'en' ? 'Delete' : 'حذف'}
+                </button>
+            </div>
         `;
         
         historyList.appendChild(historyItem);
     });
+    
+    // Add event listeners to delete buttons
+    document.querySelectorAll('.delete-history-item').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.dataset.id;
+            deleteHistoryItem(id);
+        });
+    });
+}
+
+// Delete individual history item
+function deleteHistoryItem(id) {
+    let history = JSON.parse(localStorage.getItem('translation-history')) || [];
+    
+    // Filter out the item with the specified ID
+    history = history.filter(item => item.id != id);
+    
+    // Save updated history
+    localStorage.setItem('translation-history', JSON.stringify(history));
+    
+    // Update UI
+    renderHistory(history);
 }
 
 // Clear history
@@ -440,7 +504,31 @@ function clearHistory() {
     if (confirmClear) {
         localStorage.removeItem('translation-history');
         loadHistory();
+        
+        // Collapse history section after clearing
+        const historyList = document.getElementById('history-list');
+        const historyHeader = document.querySelector('.history-header');
+        historyList.style.display = 'none';
+        historyHeader.classList.add('collapsed');
     }
+}
+
+// Paste from clipboard
+function pasteFromClipboard() {
+    navigator.clipboard.readText()
+        .then(text => {
+            sourceText.value = text;
+        })
+        .catch(err => {
+            console.error('Failed to read clipboard contents: ', err);
+            const lang = localStorage.getItem('ui-language') || 'en';
+            alert(lang === 'en' ? 'Failed to read clipboard contents.' : 'خواندن محتوای حافظه ناموفق بود.');
+        });
+}
+
+// Clear source text
+function clearSourceText() {
+    sourceText.value = '';
 }
 
 // Save API key to localStorage

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Translator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6a11cb">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="app-title">Smart AI Translator</h1>
+            <p id="app-subtitle">Designed by Ehsan Shamsi</p>
+        </header>
+        
+        <!-- Language Toggle Button -->
+        <div class="language-toggle-container">
+            <button id="lang-toggle-main" class="lang-toggle-button">
+                <span class="lang-text" id="lang-text-main">EN</span>
+                <span class="lang-text" id="lang-text-secondary">FA</span>
+            </button>
+        </div>
+        
+        <div class="translation-controls glass-card">
+            <div class="input-section">
+                <label for="source-text" id="source-text-label">Text to Translate:</label>
+                <textarea id="source-text" placeholder="Enter text to translate..."></textarea>
+            </div>
+            
+            <div class="control-section">
+                <div class="language-selector">
+                    <label for="target-lang" id="target-lang-label">Target Language:</label>
+                    <select id="target-lang">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="ru">Russian</option>
+                        <option value="ja">Japanese</option>
+                        <option value="zh">Chinese</option>
+                        <option value="ar">Arabic</option>
+                        <option value="fa">Persian (Farsi)</option>
+                    </select>
+                </div>
+                
+                <button id="translate-btn" class="translate-button">Translate</button>
+            </div>
+        </div>
+        
+        <div class="result-section glass-card">
+            <label for="translated-text" id="translated-text-label">Translated Text:</label>
+            <textarea id="translated-text" placeholder="Translation will appear here..." readonly></textarea>
+            <button id="copy-btn" class="copy-button">Copy to Clipboard</button>
+        </div>
+        
+        <!-- History Section -->
+        <div class="history-section glass-card">
+            <div class="history-header">
+                <h3 id="history-title">Translation History</h3>
+                <button id="clear-history" class="clear-history-btn">Clear</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+        </div>
+    </div>
+    
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="settings-panel">
+        <div class="settings-content glass-card">
+            <div class="settings-header">
+                <h2 id="settings-title">Settings</h2>
+                <button id="close-settings" class="close-button">&times;</button>
+            </div>
+            
+                <div class="setting-group">
+                    <label for="tone-select" id="tone-select-label">Translation Tone:</label>
+                    <select id="tone-select">
+                        <option value="0" id="tone-default">Select Tone</option>
+                        <option value="1" id="tone-1">Formal</option>
+                        <option value="2" id="tone-2">Casual</option>
+                        <option value="3" id="tone-3">Professional</option>
+                        <option value="4" id="tone-4">Friendly</option>
+                        <option value="5" id="tone-5">Academic</option>
+                        <option value="6" id="tone-6">Technical</option>
+                        <option value="7" id="tone-7">Creative</option>
+                        <option value="8" id="tone-8">Humorous</option>
+                        <option value="9" id="tone-9">Sarcastic</option>
+                        <option value="10" id="tone-10">Poetic</option>
+                        <option value="11" id="tone-11">Business</option>
+                        <option value="12" id="tone-12">Medical</option>
+                        <option value="13" id="tone-13">Legal</option>
+                        <option value="14" id="tone-14">Youth Slang</option>
+                        <option value="15" id="tone-15">Elderly Style</option>
+                        <option value="16" id="tone-16">Shakespearean</option>
+                        <option value="17" id="tone-17">Pirate</option>
+                        <option value="18" id="tone-18">Robot</option>
+                        <option value="19" id="tone-19">Fantasy</option>
+                        <option value="20" id="tone-20">Sci-Fi</option>
+                        <option value="21" id="tone-21">Educational</option>
+                    </select>
+                </div>
+            
+            <div class="setting-group">
+                <label for="theme-select" id="theme-select-label">Theme:</label>
+                <select id="theme-select">
+                    <option value="default" id="theme-default">Default</option>
+                    <option value="midnight" id="theme-midnight">Midnight</option>
+                    <option value="ocean" id="theme-ocean">Ocean</option>
+                    <option value="sunset" id="theme-sunset">Sunset</option>
+                    <option value="forest" id="theme-forest">Forest</option>
+                    <option value="lavender" id="theme-lavender">Lavender</option>
+                    <option value="coral" id="theme-coral">Coral</option>
+                    <option value="mint" id="theme-mint">Mint</option>
+                    <option value="amber" id="theme-amber">Amber</option>
+                    <option value="indigo" id="theme-indigo">Indigo</option>
+                    <option value="rose" id="theme-rose">Rose</option>
+                    <option value="teal" id="theme-teal">Teal</option>
+                    <option value="slate" id="theme-slate">Slate</option>
+                    <option value="violet" id="theme-violet">Violet</option>
+                    <option value="emerald" id="theme-emerald">Emerald</option>
+                    <option value="cyan" id="theme-cyan">Cyan</option>
+                    <option value="fuchsia" id="theme-fuchsia">Fuchsia</option>
+                    <option value="lime" id="theme-lime">Lime</option>
+                    <option value="sky" id="theme-sky">Sky</option>
+                    <option value="stone" id="theme-stone">Stone</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="model-select" id="model-select-label">AI Model:</label>
+                <select id="model-select">
+                    <option value="openai/gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="openai/gpt-4">GPT-4</option>
+                    <option value="anthropic/claude-2">Claude 2</option>
+                    <option value="anthropic/claude-instant-v1">Claude Instant</option>
+                    <option value="google/palm-2-chat-bison">PaLM 2</option>
+                    <option value="meta-llama/llama-2-13b-chat">Llama 2 13B</option>
+                    <option value="meta-llama/llama-2-70b-chat">Llama 2 70B</option>
+                    <option value="mistralai/mistral-7b-instruct">Mistral 7B</option>
+                    <option value="openchat/openchat-7b">OpenChat 7B</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="api-key" id="api-key-label">OpenRouter API Key:</label>
+                <input type="password" id="api-key" placeholder="Enter your OpenRouter API key">
+                <button id="save-key-btn">Save Key</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Action Buttons -->
+    <div class="floating-buttons">
+        <button id="settings-btn" class="floating-button">⚙️</button>
+        <button id="theme-toggle" class="floating-button">🌙</button>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

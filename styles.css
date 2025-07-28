@@ -202,7 +202,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
@@ -210,12 +210,21 @@ body {
     radial-gradient(circle at 10% 20%, rgba(179, 216, 255, 0.2) 0%, transparent 20%),
     radial-gradient(circle at 90% 80%, rgba(255, 179, 216, 0.2) 0%, transparent 20%);
   transition: background-color 0.3s, color 0.3s;
+  font-feature-settings: "liga" on, "kern" on;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 body.rtl {
-  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
   direction: rtl;
   text-align: right;
+  font-feature-settings: "liga" on, "kern" on;
+  font-size: 16px;
+  line-height: 1.7;
 }
 
 body.rtl .radio-group {
@@ -228,6 +237,46 @@ body.rtl .control-section {
 
 body.rtl .control-section > div {
   grid-column: 1;
+}
+
+/* Persian text improvements */
+body.rtl header h1 {
+  font-size: 2.2rem;
+}
+
+body.rtl header p {
+  font-size: 1rem;
+}
+
+body.rtl .glass-card {
+  padding: 20px;
+}
+
+body.rtl label {
+  font-size: 0.95rem;
+}
+
+body.rtl textarea, 
+body.rtl select, 
+body.rtl input[type="password"] {
+  font-size: 0.95rem;
+}
+
+body.rtl .text-action-btn {
+  font-size: 0.85rem;
+}
+
+body.rtl .history-item-header {
+  font-size: 0.85rem;
+}
+
+body.rtl .history-source-text,
+body.rtl .history-translated-text {
+  font-size: 0.9rem;
+}
+
+body.rtl .delete-history-item {
+  font-size: 0.85rem;
 }
 
 /* Language Toggle Button */
@@ -594,6 +643,19 @@ textarea {
   margin-top: 10px;
 }
 
+/* Result actions */
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.result-actions .copy-button,
+.result-actions .save-button {
+  flex: 1;
+  margin: 0;
+}
+
 .text-action-btn {
   flex: 1;
   background: rgba(255, 255, 255, 0.5);
@@ -637,7 +699,7 @@ body.dark-theme textarea::-webkit-resizer {
 }
 
 /* Buttons */
-.translate-button, .copy-button, .theme-button, #save-key-btn {
+.translate-button, .copy-button, .theme-button, #save-key-btn, .save-button {
   background: var(--button-bg);
   color: var(--text-color);
   border: none;
@@ -653,12 +715,13 @@ body.dark-theme textarea::-webkit-resizer {
 body.dark-theme .translate-button,
 body.dark-theme .copy-button,
 body.dark-theme .theme-button,
-body.dark-theme #save-key-btn {
+body.dark-theme #save-key-btn,
+body.dark-theme .save-button {
   background: var(--dark-button-bg);
   color: var(--dark-text-color);
 }
 
-.translate-button:hover, .copy-button:hover, .theme-button:hover, #save-key-btn:hover {
+.translate-button:hover, .copy-button:hover, .theme-button:hover, #save-key-btn:hover, .save-button:hover {
   background: var(--button-hover);
   transform: translateY(-2px);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
@@ -667,12 +730,13 @@ body.dark-theme #save-key-btn {
 body.dark-theme .translate-button:hover,
 body.dark-theme .copy-button:hover,
 body.dark-theme .theme-button:hover,
-body.dark-theme #save-key-btn:hover {
+body.dark-theme #save-key-btn:hover,
+body.dark-theme .save-button:hover {
   background: var(--dark-button-hover);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
 }
 
-.translate-button:active, .copy-button:active, .theme-button:active, #save-key-btn:active {
+.translate-button:active, .copy-button:active, .theme-button:active, #save-key-btn:active, .save-button:active {
   transform: translateY(0);
 }
 

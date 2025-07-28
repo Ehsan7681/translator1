@@ -5,6 +5,7 @@ const targetLang = document.getElementById('target-lang');
 const translateBtn = document.getElementById('translate-btn');
 const translatedText = document.getElementById('translated-text');
 const copyBtn = document.getElementById('copy-btn');
+const saveTranslationBtn = document.getElementById('save-translation-btn');
 const themeToggle = document.getElementById('theme-toggle');
 const apiKeyInput = document.getElementById('api-key');
 const saveKeyBtn = document.getElementById('save-key-btn');
@@ -82,6 +83,9 @@ const uiTexts = {
         translatedTextLabel: "Translated Text:",
         translatedTextPlaceholder: "Translation will appear here...",
         copyBtn: "Copy to Clipboard",
+        saveTranslationBtn: "Save Translation",
+        pasteBtn: "Paste from Clipboard",
+        clearSourceBtn: "Clear Text",
         apiKeyLabel: "OpenRouter API Key:",
         apiKeyPlaceholder: "Enter your OpenRouter API key",
         saveKeyBtn: "Save Key",
@@ -124,6 +128,9 @@ const uiTexts = {
         translatedTextLabel: "متن ترجمه شده:",
         translatedTextPlaceholder: "ترجمه در اینجا نمایش داده می‌شود...",
         copyBtn: "کپی در حافظه",
+        saveTranslationBtn: "ذخیره ترجمه",
+        pasteBtn: "جای‌گذاری از حافظه",
+        clearSourceBtn: "پاک کردن متن",
         apiKeyLabel: "کلید API OpenRouter:",
         apiKeyPlaceholder: "کلید API OpenRouter خود را وارد کنید",
         saveKeyBtn: "ذخیره کلید",
@@ -141,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up event listeners
     translateBtn.addEventListener('click', translateText);
     copyBtn.addEventListener('click', copyToClipboard);
+    saveTranslationBtn.addEventListener('click', saveEditedTranslation);
     themeToggle.addEventListener('click', toggleTheme);
     saveKeyBtn.addEventListener('click', saveApiKey);
     langToggleMain.addEventListener('click', toggleLanguage);
@@ -347,6 +355,9 @@ function updateUILanguage(lang) {
     document.getElementById('translated-text-label').textContent = uiTexts[lang].translatedTextLabel;
     document.getElementById('translated-text').placeholder = uiTexts[lang].translatedTextPlaceholder;
     copyBtn.textContent = uiTexts[lang].copyBtn;
+    saveTranslationBtn.textContent = uiTexts[lang].saveTranslationBtn;
+    pasteBtn.textContent = uiTexts[lang].pasteBtn;
+    clearSourceBtn.textContent = uiTexts[lang].clearSourceBtn;
     document.getElementById('api-key-label').textContent = uiTexts[lang].apiKeyLabel;
     document.getElementById('api-key').placeholder = uiTexts[lang].apiKeyPlaceholder;
     document.getElementById('save-key-btn').textContent = uiTexts[lang].saveKeyBtn;
@@ -482,16 +493,23 @@ function renderHistory(history) {
 
 // Delete individual history item
 function deleteHistoryItem(id) {
-    let history = JSON.parse(localStorage.getItem('translation-history')) || [];
+    const lang = localStorage.getItem('ui-language') || 'en';
+    const confirmDelete = lang === 'en' 
+        ? confirm('Are you sure you want to delete this translation from history?')
+        : confirm('آیا مطمئن هستید که می‌خواهید این ترجمه را از تاریخچه حذف کنید؟');
     
-    // Filter out the item with the specified ID
-    history = history.filter(item => item.id != id);
-    
-    // Save updated history
-    localStorage.setItem('translation-history', JSON.stringify(history));
-    
-    // Update UI
-    renderHistory(history);
+    if (confirmDelete) {
+        let history = JSON.parse(localStorage.getItem('translation-history')) || [];
+        
+        // Filter out the item with the specified ID
+        history = history.filter(item => item.id != id);
+        
+        // Save updated history
+        localStorage.setItem('translation-history', JSON.stringify(history));
+        
+        // Update UI
+        renderHistory(history);
+    }
 }
 
 // Clear history
@@ -575,6 +593,40 @@ function copyToClipboard() {
     }
 }
 
+// Save edited translation to history
+function saveEditedTranslation() {
+    const source = sourceText.value.trim();
+    const translated = translatedText.value.trim();
+    const tone = toneSelect.value;
+    const targetLanguage = targetLang.options[targetLang.selectedIndex].text;
+    const lang = localStorage.getItem('ui-language') || 'en';
+    
+    if (!source) {
+        alert(lang === 'en' ? 'No source text to save.' : 'متنی برای ذخیره وجود ندارد.');
+        return;
+    }
+    
+    if (!translated) {
+        alert(lang === 'en' ? 'No translated text to save.' : 'متن ترجمه شده‌ای برای ذخیره وجود ندارد.');
+        return;
+    }
+    
+    if (tone === '0') {
+        alert(lang === 'en' ? 'Please select a translation tone.' : 'لطفاً یک سبک ترجمه انتخاب کنید.');
+        return;
+    }
+    
+    // Save translation to history
+    saveToHistory(source, translated, tone, targetLanguage);
+    
+    // Show success message
+    const originalText = saveTranslationBtn.textContent;
+    saveTranslationBtn.textContent = lang === 'en' ? 'Saved!' : 'ذخیره شد!';
+    setTimeout(() => {
+        saveTranslationBtn.textContent = lang === 'en' ? 'Save Translation' : 'ذخیره ترجمه';
+    }, 2000);
+}
+
 // Translate text using OpenRouter API
 async function translateText() {
     const text = sourceText.value.trim();
@@ -609,10 +661,10 @@ async function translateText() {
         // Get tone description
         const toneDescription = translationTones[tone];
         
-        // Create prompt for translation
+        // Create prompt for translation that preserves tone and style without adding explanations
         const prompt = lang === 'en' 
-            ? `Translate the following text to ${targetLanguage} in a ${toneDescription}. Text to translate: "${text}"`
-            : `متن زیر را به زبان ${targetLanguage} با سبک ${toneDescription} ترجمه کن. متن برای ترجمه: "${text}"`;
+            ? `Translate the following text to ${targetLanguage} maintaining the exact meaning, tone, and style. Do not add any explanations, context, or additional information beyond what is in the original text. Translation tone: ${toneDescription}. Text to translate: "${text}"`
+            : `متن زیر را به زبان ${targetLanguage} با حفظ دقیق معنی، لحن و سبک ترجمه کن. بدون افزودن هرگونه توضیح، زمینه یا اطلاعات اضافی فراتر از آنچه در متن اصلی است. سبک ترجمه: ${toneDescription}. متن برای ترجمه: "${text}"`;
         
         // Call OpenRouter API
         const response = await callOpenRouterAPI(prompt, apiKey, model);
